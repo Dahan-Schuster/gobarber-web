@@ -33,6 +33,8 @@
 		"react/jsx-one-expression-per-line": "off",
 		"react/jsx-indent-props": "off",
 		"react/jsx-indent": [2, "tab"],
+		"react/jsx-props-no-spreading": "off",
+		"react/prop-types": "off",
 		"camelcase": "off",
 		"prettier/prettier": "error",
 		"react-hooks/rules-of-hooks": "error",
