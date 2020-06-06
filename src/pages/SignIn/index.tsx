@@ -11,7 +11,7 @@ import Input from '../../components/input';
 import Button from '../../components/button';
 import getValidationErros from '../../utils/getValidationErros';
 
-import { useAuth } from '../../context/authContext';
+import { useAuth } from '../../hooks/auth';
 
 interface FormData {
 	email: string;
@@ -41,8 +41,10 @@ const SignIn: React.FC = () => {
 					password: data.password,
 				});
 			} catch (err) {
-				const errors = getValidationErros(err);
-				formRef.current?.setErrors(errors);
+				if (err instanceof Yup.ValidationError) {
+					const errors = getValidationErros(err);
+					formRef.current?.setErrors(errors);
+				}
 			}
 		},
 		[signIn],
