@@ -1,4 +1,4 @@
-import React, { createContext, useCallback, useState } from 'react';
+import React, { createContext, useCallback, useContext, useState } from 'react';
 import api from '../services/api';
 
 interface SigninCredentials {
@@ -6,7 +6,7 @@ interface SigninCredentials {
 	password: string;
 }
 
-interface AuthContextInterface {
+interface AuthContextData {
 	user: object;
 	signIn(credentials: SigninCredentials): Promise<void>;
 }
@@ -16,7 +16,7 @@ interface AuthData {
 	user: object;
 }
 
-export const AuthContext = createContext<AuthContextInterface>({} as AuthContextInterface);
+const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
 export const AuthProvider: React.FC = ({ children }) => {
 	const [authData, setAuthData] = useState<AuthData>(() => {
@@ -47,3 +47,11 @@ export const AuthProvider: React.FC = ({ children }) => {
 
 	return <AuthContext.Provider value={{ user: authData.user, signIn }}>{children}</AuthContext.Provider>;
 };
+
+export function useAuth(): AuthContextData {
+	const context = useContext(AuthContext);
+
+	if (!context) throw new Error('useAuth must be used within an AuthProvider component.');
+
+	return context;
+}
