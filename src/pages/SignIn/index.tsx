@@ -12,6 +12,7 @@ import Button from '../../components/button';
 import getValidationErros from '../../utils/getValidationErros';
 
 import { useAuth } from '../../hooks/auth';
+import { useToast } from '../../hooks/toast';
 
 interface FormData {
 	email: string;
@@ -21,6 +22,7 @@ interface FormData {
 const SignIn: React.FC = () => {
 	const formRef = useRef<FormHandles>(null);
 	const { signIn } = useAuth();
+	const { addToast } = useToast();
 
 	const handleSubmit = useCallback(
 		async (data: FormData) => {
@@ -45,9 +47,15 @@ const SignIn: React.FC = () => {
 					const errors = getValidationErros(err);
 					formRef.current?.setErrors(errors);
 				}
+
+				addToast({
+					type: 'error',
+					title: 'Erro na autenticação',
+					description: 'Email ou senha inválidos',
+				});
 			}
 		},
-		[signIn],
+		[signIn, addToast],
 	);
 
 	return (
