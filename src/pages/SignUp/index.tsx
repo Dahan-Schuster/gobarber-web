@@ -1,9 +1,9 @@
 import React, { useCallback, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { FiArrowLeft, FiMail, FiLock, FiUser } from 'react-icons/fi';
-import * as Yup from 'yup';
-
 import { Form } from '@unform/web';
 import { FormHandles } from '@unform/core';
+import * as Yup from 'yup';
 
 import logoImg from '../../assets/logo.svg';
 import { Container, Background, Content } from './styles';
@@ -28,7 +28,9 @@ const SignUp: React.FC = () => {
 
 			const schema = Yup.object().shape({
 				name: Yup.string().required('Nome obrigatório'),
-				email: Yup.string().required('Email obrigatório').email('Email inválido'),
+				email: Yup.string()
+					.required('Email obrigatório')
+					.email('Email inválido'),
 				password: Yup.string().min(6, 'No mínimo 6 dígitos'),
 			});
 
@@ -51,15 +53,20 @@ const SignUp: React.FC = () => {
 
 					<Input icon={FiUser} name="name" placeholder="Nome" />
 					<Input icon={FiMail} name="email" placeholder="E-mail" />
-					<Input icon={FiLock} name="password" type="password" placeholder="Senha" />
+					<Input
+						icon={FiLock}
+						name="password"
+						type="password"
+						placeholder="Senha"
+					/>
 
 					<Button type="submit">Cadastrar</Button>
 				</Form>
 
-				<a href="">
+				<Link to="/">
 					<FiArrowLeft />
 					Voltar para o Logon
-				</a>
+				</Link>
 			</Content>
 		</Container>
 	);
