@@ -7,7 +7,7 @@ import { Form } from '@unform/web';
 import * as Yup from 'yup';
 // Assets
 import logoImg from '../../assets/logo.svg';
-import { Container, Background, Content } from './styles';
+import { Container, Background, Content, AnimatedContainer } from './styles';
 // Components
 import Input from '../../components/input';
 import Button from '../../components/button';
@@ -65,27 +65,33 @@ const SignIn: React.FC = () => {
 	return (
 		<Container>
 			<Content>
-				<img src={logoImg} alt="GoBarber" />
-				<Form ref={formRef} onSubmit={handleSubmit}>
-					<h1>Faça seu Logon</h1>
+				<AnimatedContainer>
+					<img src={logoImg} alt="GoBarber" />
+					<Form ref={formRef} onSubmit={handleSubmit}>
+						<h1>Faça seu Logon</h1>
 
-					<Input icon={FiMail} name="email" placeholder="E-mail" />
-					<Input
-						icon={FiLock}
-						name="password"
-						type="password"
-						placeholder="Senha"
-					/>
+						<Input
+							icon={FiMail}
+							name="email"
+							placeholder="E-mail"
+						/>
+						<Input
+							icon={FiLock}
+							name="password"
+							type="password"
+							placeholder="Senha"
+						/>
 
-					<Button type="submit">Entrar</Button>
+						<Button type="submit">Entrar</Button>
 
-					<Link to="/forgot">Esqueci minha senha</Link>
-				</Form>
+						<Link to="/forgot">Esqueci minha senha</Link>
+					</Form>
 
-				<Link to="/signup">
-					<FiLogIn />
-					Criar conta
-				</Link>
+					<Link to="/signup">
+						<FiLogIn />
+						Criar conta
+					</Link>
+				</AnimatedContainer>
 			</Content>
 			<Background />
 		</Container>

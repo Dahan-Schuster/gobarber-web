@@ -6,7 +6,7 @@ import { FormHandles } from '@unform/core';
 import * as Yup from 'yup';
 
 import logoImg from '../../assets/logo.svg';
-import { Container, Background, Content } from './styles';
+import { Container, Background, Content, AnimatedContainer } from './styles';
 
 import Input from '../../components/input';
 import Button from '../../components/button';
@@ -69,26 +69,32 @@ const SignUp: React.FC = () => {
 		<Container>
 			<Background />
 			<Content>
-				<img src={logoImg} alt="GoBarber" />
-				<Form ref={formRef} onSubmit={handleSubmit}>
-					<h1>Faça seu cadastro</h1>
+				<AnimatedContainer>
+					<img src={logoImg} alt="GoBarber" />
+					<Form ref={formRef} onSubmit={handleSubmit}>
+						<h1>Faça seu cadastro</h1>
 
-					<Input icon={FiUser} name="name" placeholder="Nome" />
-					<Input icon={FiMail} name="email" placeholder="E-mail" />
-					<Input
-						icon={FiLock}
-						name="password"
-						type="password"
-						placeholder="Senha"
-					/>
+						<Input icon={FiUser} name="name" placeholder="Nome" />
+						<Input
+							icon={FiMail}
+							name="email"
+							placeholder="E-mail"
+						/>
+						<Input
+							icon={FiLock}
+							name="password"
+							type="password"
+							placeholder="Senha"
+						/>
 
-					<Button type="submit">Cadastrar</Button>
-				</Form>
+						<Button type="submit">Cadastrar</Button>
+					</Form>
 
-				<Link to="/">
-					<FiArrowLeft />
-					Voltar para o Logon
-				</Link>
+					<Link to="/">
+						<FiArrowLeft />
+						Voltar para o Logon
+					</Link>
+				</AnimatedContainer>
 			</Content>
 		</Container>
 	);
