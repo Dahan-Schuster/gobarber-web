@@ -53,13 +53,20 @@ export const AuthProvider: React.FC = ({ children }) => {
 		setAuthData({} as AuthData);
 	}, []);
 
-	return <AuthContext.Provider value={{ user: authData.user, signIn, signOut }}>{children}</AuthContext.Provider>;
+	return (
+		<AuthContext.Provider value={{ user: authData.user, signIn, signOut }}>
+			{children}
+		</AuthContext.Provider>
+	);
 };
 
 export function useAuth(): AuthContextData {
 	const context = useContext(AuthContext);
 
-	if (!context) throw new Error('useAuth must be used within an AuthProvider component.');
+	if (!context)
+		throw new Error(
+			'useAuth must be used within an AuthProvider component.',
+		);
 
 	return context;
 }
