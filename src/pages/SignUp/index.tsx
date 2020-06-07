@@ -12,6 +12,7 @@ import Input from '../../components/input';
 import Button from '../../components/button';
 
 import getValidationErros from '../../utils/getValidationErros';
+import { useToast } from '../../hooks/toast';
 
 interface FormData {
 	name: string;
@@ -21,27 +22,48 @@ interface FormData {
 
 const SignUp: React.FC = () => {
 	const formRef = useRef<FormHandles>(null);
+	const { addToast } = useToast();
 
-	const handleSubmit = useCallback(async (data: FormData) => {
-		try {
-			formRef.current?.setErrors({});
+	const handleSubmit = useCallback(
+		async (data: FormData) => {
+			try {
+				formRef.current?.setErrors({});
 
-			const schema = Yup.object().shape({
-				name: Yup.string().required('Nome obrigatório'),
-				email: Yup.string()
-					.required('Email obrigatório')
-					.email('Email inválido'),
-				password: Yup.string().min(6, 'No mínimo 6 dígitos'),
-			});
+				const schema = Yup.object().shape({
+					name: Yup.string().required('Nome obrigatório'),
+					email: Yup.string()
+						.required('Email obrigatório')
+						.email('Email inválido'),
+					password: Yup.string().min(6, 'No mínimo 6 dígitos'),
+				});
 
-			await schema.validate(data, {
-				abortEarly: false,
-			});
-		} catch (err) {
-			const errors = getValidationErros(err);
-			formRef.current?.setErrors(errors);
-		}
-	}, []);
+				await schema.validate(data, {
+					abortEarly: false,
+				});
+			} catch (err) {
+				let toastDescription =
+					'Ocorreu um erro ao tentar realizar o cadastro. ' +
+					'Por favor, tente novamente.';
+
+				if (err instanceof Yup.ValidationError) {
+					const errors = getValidationErros(err);
+					formRef.current?.setErrors(errors);
+
+					toastDescription =
+						'Você não preencheu corretamente os campos do formulário. ' +
+						'Por favor, verifique os dados e tente novamente.';
+				}
+
+				addToast({
+					type: 'error',
+					title: 'Erro ao cadastrar',
+					description: toastDescription,
+					duration: 5000,
+				});
+			}
+		},
+		[addToast],
+	);
 
 	return (
 		<Container>
