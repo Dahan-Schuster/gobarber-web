@@ -16,7 +16,7 @@ import getValidationErros from '../../utils/getValidationErros';
 import { useAuth } from '../../hooks/auth';
 import { useToast } from '../../hooks/toast';
 
-interface FormData {
+interface SignInFormData {
 	email: string;
 	password: string;
 }
@@ -27,7 +27,7 @@ const SignIn: React.FC = () => {
 	const { addToast } = useToast();
 
 	const handleSubmit = useCallback(
-		async (data: FormData) => {
+		async (data: SignInFormData) => {
 			try {
 				formRef.current?.setErrors({});
 
@@ -42,10 +42,7 @@ const SignIn: React.FC = () => {
 					abortEarly: false,
 				});
 
-				await signIn({
-					email: data.email,
-					password: data.password,
-				});
+				await signIn(data);
 			} catch (err) {
 				if (err instanceof Yup.ValidationError) {
 					const errors = getValidationErros(err);

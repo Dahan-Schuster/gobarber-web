@@ -1,5 +1,5 @@
 import React, { useCallback, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { FiArrowLeft, FiMail, FiLock, FiUser } from 'react-icons/fi';
 import { Form } from '@unform/web';
 import { FormHandles } from '@unform/core';
@@ -14,7 +14,9 @@ import Button from '../../components/Button';
 import getValidationErros from '../../utils/getValidationErros';
 import { useToast } from '../../hooks/toast';
 
-interface FormData {
+import api from '../../services/api';
+
+interface SignUpFormData {
 	name: string;
 	email: string;
 	password: string;
@@ -23,9 +25,10 @@ interface FormData {
 const SignUp: React.FC = () => {
 	const formRef = useRef<FormHandles>(null);
 	const { addToast } = useToast();
+	const history = useHistory();
 
 	const handleSubmit = useCallback(
-		async (data: FormData) => {
+		async (data: SignUpFormData) => {
 			try {
 				formRef.current?.setErrors({});
 
@@ -39,6 +42,16 @@ const SignUp: React.FC = () => {
 
 				await schema.validate(data, {
 					abortEarly: false,
+				});
+
+				await api.post('/users', data);
+
+				history.push('/');
+
+				addToast({
+					type: 'success',
+					title: 'Cadastro realizado com sucesso',
+					description: 'Você já pode fazer seu logon',
 				});
 			} catch (err) {
 				let toastDescription =
@@ -62,7 +75,7 @@ const SignUp: React.FC = () => {
 				});
 			}
 		},
-		[addToast],
+		[addToast, history],
 	);
 
 	return (
