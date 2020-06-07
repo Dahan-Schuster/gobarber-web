@@ -7,10 +7,12 @@ export interface ToastMessage {
 	type?: 'success' | 'error' | 'info';
 	title: string;
 	description?: string;
+	duration?: number;
 }
 
 interface ToastContextData {
 	addToast(message: Omit<ToastMessage, 'id'>): void;
+
 	removeToast(id: string): void;
 }
 
@@ -19,20 +21,26 @@ const ToastContext = createContext<ToastContextData>({} as ToastContextData);
 export const ToastProvider: React.FC = ({ children }) => {
 	const [messages, setMessages] = useState<ToastMessage[]>([]);
 
-	const addToast = useCallback(({ title, type, description }: Omit<ToastMessage, 'id'>) => {
-		const id = uuid();
+	const addToast = useCallback(
+		({ title, type, description, duration }: Omit<ToastMessage, 'id'>) => {
+			const id = uuid();
 
-		const toastMessage = {
-			id,
-			title,
-			type,
-			description,
-		};
+			const toastMessage = {
+				id,
+				title,
+				type,
+				description,
+				duration,
+			};
 
-		setMessages((oldMessages) => [...oldMessages, toastMessage]);
-	}, []);
+			setMessages((oldMessages) => [...oldMessages, toastMessage]);
+		},
+		[],
+	);
 	const removeToast = useCallback((id: string) => {
-		setMessages((oldMessages) => oldMessages.filter((toast) => toast.id !== id));
+		setMessages((oldMessages) =>
+			oldMessages.filter((toast) => toast.id !== id),
+		);
 	}, []);
 
 	return (
@@ -46,7 +54,8 @@ export const ToastProvider: React.FC = ({ children }) => {
 export function useToast(): ToastContextData {
 	const context = useContext(ToastContext);
 
-	if (!context) throw new Error('useToast must be used within a ToastProvider');
+	if (!context)
+		throw new Error('useToast must be used within a ToastProvider');
 
 	return context;
 }

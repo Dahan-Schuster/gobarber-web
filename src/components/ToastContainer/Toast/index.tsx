@@ -19,16 +19,18 @@ const icons = {
 	error: <FiAlertCircle size={24} />,
 };
 
+const DEFAULT_DURATION = 3000;
+
 const Toast: React.FC<ToastProps> = ({ toastMessage, style }) => {
 	const { removeToast } = useToast();
 
 	useEffect(() => {
 		const timer = setTimeout(() => {
 			removeToast(toastMessage.id);
-		}, 3000);
+		}, toastMessage.duration || DEFAULT_DURATION);
 
 		return () => clearTimeout(timer);
-	}, [toastMessage.id, removeToast]);
+	}, [toastMessage.id, toastMessage.duration, removeToast]);
 
 	return (
 		<Container
