@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { FiArrowLeft, FiMail, FiLock, FiUser } from 'react-icons/fi';
 import { Form } from '@unform/web';
@@ -26,10 +26,14 @@ const SignUp: React.FC = () => {
 	const formRef = useRef<FormHandles>(null);
 	const { addToast } = useToast();
 	const history = useHistory();
+	const [loading, setLoading] = useState(false);
 
 	const handleSubmit = useCallback(
 		async (data: SignUpFormData) => {
+			if (loading) return;
 			try {
+				setLoading(true);
+
 				formRef.current?.setErrors({});
 
 				const schema = Yup.object().shape({
@@ -73,9 +77,11 @@ const SignUp: React.FC = () => {
 					description: toastDescription,
 					duration: 5000,
 				});
+			} finally {
+				setLoading(false);
 			}
 		},
-		[addToast, history],
+		[addToast, history, loading],
 	);
 
 	return (
@@ -100,7 +106,9 @@ const SignUp: React.FC = () => {
 							placeholder="Senha"
 						/>
 
-						<Button type="submit">Cadastrar</Button>
+						<Button loading={loading} type="submit">
+							Cadastrar
+						</Button>
 					</Form>
 
 					<Link to="/">

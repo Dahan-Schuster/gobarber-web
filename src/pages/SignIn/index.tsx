@@ -1,5 +1,5 @@
 // Packages
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FiLogIn, FiMail, FiLock } from 'react-icons/fi';
 import { FormHandles } from '@unform/core';
@@ -25,10 +25,14 @@ const SignIn: React.FC = () => {
 	const formRef = useRef<FormHandles>(null);
 	const { signIn } = useAuth();
 	const { addToast } = useToast();
+	const [loading, setLoading] = useState(false);
 
 	const handleSubmit = useCallback(
 		async (data: SignInFormData) => {
+			if (loading) return;
 			try {
+				setLoading(true);
+
 				formRef.current?.setErrors({});
 
 				const schema = Yup.object().shape({
@@ -54,9 +58,11 @@ const SignIn: React.FC = () => {
 					title: 'Erro na autenticação',
 					description: 'Email ou senha inválidos',
 				});
+			} finally {
+				setLoading(false);
 			}
 		},
-		[signIn, addToast],
+		[signIn, addToast, loading],
 	);
 
 	return (
@@ -79,7 +85,9 @@ const SignIn: React.FC = () => {
 							placeholder="Senha"
 						/>
 
-						<Button type="submit">Entrar</Button>
+						<Button loading={loading} type="submit">
+							Entrar
+						</Button>
 
 						<Link to="/forgot-password">Esqueci minha senha</Link>
 					</Form>
