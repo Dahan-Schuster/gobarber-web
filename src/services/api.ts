@@ -1,5 +1,11 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { STORAGE_TOKEN_KEY } from '../hooks/auth';
+import { ToastMessage } from '../hooks/toast';
+import StatusHTTP from './StatusHTTP';
+
+export interface FriendlyError extends AxiosError {
+	toastMessage: ToastMessage;
+}
 
 const api = axios.create({
 	baseURL: 'http://localhost:3333',
@@ -16,5 +22,33 @@ api.interceptors.request.use(async (config) => {
 
 	return config;
 });
+
+// Intercepta respostas e adiciona uma objeto contendo respostas de erro amigáveis
+api.interceptors.response.use(
+	(response) => response,
+	(error): Promise<FriendlyError> => {
+		const toastMessage = {
+			type: 'error',
+			title: 'Oops!',
+			description:
+				'Não foi possível realizar a sua requisição. Tente novamente.',
+		} as ToastMessage;
+
+		const errorCode = error.response?.status;
+
+		if (errorCode === StatusHTTP.TOO_MANY_REQUESTS) {
+			toastMessage.title = 'Para que tanta pressa?';
+			toastMessage.description =
+				'Vai com calma! Nossos servidores agradecem 😉';
+		} else if (errorCode === StatusHTTP.INTERNAL_SERVER_ERROR) {
+			toastMessage.title = 'Eita!';
+			toastMessage.description =
+				'Nosso servidor está doente no momento. Vamos cuidar dele o mais rápido possível!';
+		}
+
+		error.toastMessage = toastMessage;
+		return Promise.reject(error);
+	},
+);
 
 export default api;

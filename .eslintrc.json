@@ -29,6 +29,7 @@
 		"prettier"
 	],
 	"rules": {
+		"no-param-reassign": "off",
 		"@typescript-eslint/ban-types": "off",
 		"no-unused-expressions": "off",
 		"no-console": "off",
