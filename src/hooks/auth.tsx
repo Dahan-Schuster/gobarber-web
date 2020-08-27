@@ -25,10 +25,13 @@ interface AuthContextData {
 
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
+export const STORAGE_TOKEN_KEY = '@GoBarber:token';
+export const STORAGE_USER_KEY = '@GoBarber:user';
+
 export const AuthProvider: React.FC = ({ children }) => {
 	const [authData, setAuthData] = useState<AuthData>(() => {
-		const token = localStorage.getItem('@GoBarber:token');
-		const user = localStorage.getItem('@GoBarber:user');
+		const token = localStorage.getItem(STORAGE_TOKEN_KEY);
+		const user = localStorage.getItem(STORAGE_USER_KEY);
 
 		const data = {} as AuthData;
 		if (token && user) {
@@ -46,15 +49,15 @@ export const AuthProvider: React.FC = ({ children }) => {
 		});
 
 		const { token, user } = response.data;
-		localStorage.setItem('@GoBarber:token', token);
-		localStorage.setItem('@GoBarber:user', JSON.stringify(user));
+		localStorage.setItem(STORAGE_TOKEN_KEY, token);
+		localStorage.setItem(STORAGE_USER_KEY, JSON.stringify(user));
 
 		setAuthData({ token, user });
 	}, []);
 
 	const signOut = useCallback(() => {
-		localStorage.removeItem('@GoBarber:token');
-		localStorage.removeItem('@GoBarber:user');
+		localStorage.removeItem(STORAGE_TOKEN_KEY);
+		localStorage.removeItem(STORAGE_USER_KEY);
 
 		setAuthData({} as AuthData);
 	}, []);
