@@ -39,7 +39,7 @@ interface AppointmentItem {
 }
 
 const Dashboard: React.FC = () => {
-	const { user } = useAuth();
+	const { user, signOut } = useAuth();
 	const { addToast } = useToast();
 
 	const [selectedDate, setSelectedDate] = useState(new Date());
@@ -78,6 +78,7 @@ const Dashboard: React.FC = () => {
 				setMonthAvailability(response.data);
 			})
 			.catch((err: FriendlyError) => {
+				err.signOut && signOut();
 				addToast(err.toastMessage);
 			})
 			.finally(() => setLoading(false));
@@ -106,8 +107,9 @@ const Dashboard: React.FC = () => {
 				);
 				setAppointments(appointmentsFormatted);
 			})
-			.catch((error: FriendlyError) => {
-				addToast(error.toastMessage);
+			.catch((err: FriendlyError) => {
+				err.signOut && signOut();
+				addToast(err.toastMessage);
 			})
 			.finally(() => setLoading(false));
 	}, [selectedDate]);
