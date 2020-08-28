@@ -23,6 +23,7 @@ export const Schedule = styled.section`
 
 		span {
 			position: relative;
+			text-transform: capitalize;
 		}
 
 		span + span {
@@ -129,11 +130,10 @@ export const Appointment = styled.div`
 		font-size: 20px;
 		line-height: 26px;
 		color: #f4ede8;
+		width: 80px;
 
 		svg {
 			color: #ff9000;
-			width: 24px;
-			height: 24px;
 			margin-right: 12px;
 		}
 	}
