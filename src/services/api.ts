@@ -5,6 +5,7 @@ import StatusHTTP from './StatusHTTP';
 
 export interface FriendlyError extends AxiosError {
 	toastMessage: ToastMessage;
+	signOut?: boolean;
 }
 
 const api = axios.create({
@@ -40,6 +41,13 @@ api.interceptors.response.use(
 			toastMessage.title = 'Para que tanta pressa?';
 			toastMessage.description =
 				'Vai com calma! Nossos servidores agradecem 😉';
+		} else if (errorCode === StatusHTTP.UNAUTHORIZED) {
+			toastMessage.type = 'info';
+			toastMessage.title = 'Vem sempre aqui?';
+			toastMessage.description =
+				'Parece que você ficou muito tempo longe. Que tal fazer login novamente?';
+
+			error.signOut = true;
 		} else if (errorCode === StatusHTTP.INTERNAL_SERVER_ERROR) {
 			toastMessage.title = 'Eita!';
 			toastMessage.description =
