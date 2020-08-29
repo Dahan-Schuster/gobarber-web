@@ -82,7 +82,8 @@ const Dashboard: React.FC = () => {
 				addToast(err.toastMessage);
 			})
 			.finally(() => setLoading(false));
-	}, [addToast, currentMonth, user.id]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [addToast, currentMonth, signOut, user.id]);
 
 	useEffect(() => {
 		if (loading) return;
@@ -112,7 +113,8 @@ const Dashboard: React.FC = () => {
 				addToast(err.toastMessage);
 			})
 			.finally(() => setLoading(false));
-	}, [selectedDate]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [addToast, selectedDate, signOut]);
 
 	const morningAppointments = useMemo(() => {
 		return appointments.filter((appointment) => {
