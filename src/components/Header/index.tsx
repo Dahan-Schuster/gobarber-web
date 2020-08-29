@@ -26,7 +26,7 @@ const Header: React.FC = () => {
 					/>
 					<div>
 						<span>Bem vindo,</span>
-						<Link to="/profile">
+						<Link to="/me">
 							<strong>{user.name}</strong>
 						</Link>
 					</div>
