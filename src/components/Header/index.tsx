@@ -1,6 +1,7 @@
 import React from 'react';
 import { FiPower } from 'react-icons/fi';
 
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/auth';
 
 import { Container, HeaderContent, Profile } from './styles';
@@ -14,7 +15,9 @@ const Header: React.FC = () => {
 	return (
 		<Container>
 			<HeaderContent>
-				<img src={logoImg} alt="GoBarber" />
+				<Link to="/dashboard">
+					<img className="img-logo" src={logoImg} alt="GoBarber" />
+				</Link>
 
 				<Profile>
 					<img
@@ -23,7 +26,9 @@ const Header: React.FC = () => {
 					/>
 					<div>
 						<span>Bem vindo,</span>
-						<strong>{user.name}</strong>
+						<Link to="/profile">
+							<strong>{user.name}</strong>
+						</Link>
 					</div>
 				</Profile>
 

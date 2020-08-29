@@ -3,6 +3,7 @@ import styled from 'styled-components';
 export const Container = styled.header`
 	padding: 32px 0;
 	background-color: #28262e;
+	width: 100%;
 `;
 
 export const HeaderContent = styled.div`
@@ -11,7 +12,7 @@ export const HeaderContent = styled.div`
 	display: flex;
 	align-items: center;
 
-	> img {
+	.img-logo {
 		height: 80px;
 	}
 
@@ -49,8 +50,13 @@ export const Profile = styled.div`
 			color: #f4ede8;
 		}
 
-		strong {
+		a {
+			text-decoration: none;
 			color: #ff9000;
+
+			&:hover {
+				opacity: 0.6;
+			}
 		}
 	}
 `;
