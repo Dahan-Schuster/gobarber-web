@@ -59,7 +59,7 @@ export const AvatarInput = styled.div`
 			border-radius: 50%;
 		}
 
-		.btn-change-avatar {
+		.label-change-avatar {
 			position: absolute;
 			width: 48px;
 			height: 48px;
@@ -71,7 +71,12 @@ export const AvatarInput = styled.div`
 			display: flex;
 			align-items: center;
 			justify-content: center;
+			cursor: pointer;
 			transition: background-color 0.2s;
+
+			&:hover {
+				background-color: ${shade(0.2, '#ff9000')};
+			}
 
 			> svg {
 				width: 20px;
@@ -79,8 +84,8 @@ export const AvatarInput = styled.div`
 				color: #312e38;
 			}
 
-			&:hover {
-				background-color: ${shade(0.2, '#ff9000')};
+			input[type='file'] {
+				display: none;
 			}
 		}
 	}

@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { ChangeEvent, useCallback, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FiArrowLeft, FiMail, FiLock, FiUser, FiCamera } from 'react-icons/fi';
 import { Form } from '@unform/web';
@@ -15,7 +15,9 @@ import {
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 
-import { useAuth } from '../../hooks/auth';
+import { useToast } from '../../hooks/toast';
+import { useAuth, User } from '../../hooks/auth';
+import api, { FriendlyError } from '../../services/api';
 
 interface ProfileFormData {
 	name: string;
@@ -25,12 +27,47 @@ interface ProfileFormData {
 
 const Profile: React.FC = () => {
 	const formRef = useRef<FormHandles>(null);
-	const [loading] = useState(false);
-	const { user } = useAuth();
+	const { addToast } = useToast();
+	const [loading, setLoading] = useState(false);
+	const { user, signOut, updateUser } = useAuth();
 
 	const handleSubmit = useCallback(async (data: ProfileFormData) => {
 		console.log(data);
 	}, []);
+
+	const handleAvatarChange = useCallback(
+		(e: ChangeEvent<HTMLInputElement>) => {
+			e.preventDefault();
+			if (loading) return;
+			setLoading(true);
+
+			if (e.target.files) {
+				const data = new FormData();
+				data.append('avatar', e.target.files[0]);
+
+				api.patch<User>('/users/avatar', data)
+					.then((response) => {
+						updateUser(response.data);
+
+						addToast({
+							type: 'success',
+							title: 'Avatar atualizado!',
+							description:
+								'Adorei a foto, muito chique! Você deve fazer login novamente para que a' +
+								' foto seja aplicada.',
+							duration: 6000,
+						});
+					})
+					.catch((err: FriendlyError) => {
+						err.signOut && signOut();
+						addToast(err.toastMessage);
+					})
+					.finally(() => setLoading(false));
+			}
+		},
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[addToast, signOut, updateUser],
+	);
 
 	return (
 		<Container>
@@ -57,9 +94,18 @@ const Profile: React.FC = () => {
 								src={user.avatarUrl || defaultAvatar}
 								alt="Avatar"
 							/>
-							<button className="btn-change-avatar" type="button">
+							<label
+								className="label-change-avatar"
+								htmlFor="avatar"
+							>
 								<FiCamera />
-							</button>
+								<input
+									multiple={false}
+									type="file"
+									id="avatar"
+									onChange={handleAvatarChange}
+								/>
+							</label>
 						</div>
 					</AvatarInput>
 
