@@ -7,7 +7,7 @@ interface SigninCredentials {
 	password: string;
 }
 
-interface User {
+export interface User {
 	id: string;
 	avatarUrl: string;
 	name: string;
@@ -23,6 +23,7 @@ interface AuthContextData {
 	user: User;
 	signIn(credentials: SigninCredentials): Promise<void>;
 	signOut(): void;
+	updateUser(updateData: User): void;
 }
 
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
@@ -76,8 +77,22 @@ export const AuthProvider: React.FC = ({ children }) => {
 		setAuthData({} as AuthData);
 	}, []);
 
+	const updateUser = useCallback(
+		(updatedUser: User) => {
+			setAuthData({
+				token: authData.token,
+				user: updatedUser,
+			});
+
+			localStorage.setItem(STORAGE_USER_KEY, JSON.stringify(updatedUser));
+		},
+		[authData.token],
+	);
+
 	return (
-		<AuthContext.Provider value={{ user: authData.user, signIn, signOut }}>
+		<AuthContext.Provider
+			value={{ user: authData.user, signIn, signOut, updateUser }}
+		>
 			{children}
 		</AuthContext.Provider>
 	);
