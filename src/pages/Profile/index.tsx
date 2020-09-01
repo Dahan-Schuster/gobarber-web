@@ -1,8 +1,9 @@
 import React, { ChangeEvent, useCallback, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { FiArrowLeft, FiMail, FiLock, FiUser, FiCamera } from 'react-icons/fi';
 import { Form } from '@unform/web';
 import { FormHandles } from '@unform/core';
+import * as Yup from 'yup';
 
 import defaultAvatar from '../../assets/default-avatar.svg';
 import {
@@ -15,6 +16,7 @@ import {
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 
+import getValidationErros from '../../utils/getValidationErros';
 import { useToast } from '../../hooks/toast';
 import { useAuth, User } from '../../hooks/auth';
 import api, { FriendlyError } from '../../services/api';
@@ -22,7 +24,9 @@ import api, { FriendlyError } from '../../services/api';
 interface ProfileFormData {
 	name: string;
 	email: string;
+	oldPassword: string;
 	password: string;
+	passwordConfirmation: string;
 }
 
 const Profile: React.FC = () => {
@@ -30,10 +34,87 @@ const Profile: React.FC = () => {
 	const { addToast } = useToast();
 	const [loading, setLoading] = useState(false);
 	const { user, signOut, updateUser } = useAuth();
+	const history = useHistory();
 
-	const handleSubmit = useCallback(async (data: ProfileFormData) => {
-		console.log(data);
-	}, []);
+	const handleSubmit = useCallback(
+		async (data: ProfileFormData) => {
+			if (loading) return;
+			try {
+				setLoading(true);
+
+				formRef.current?.setErrors({});
+
+				const schema = Yup.object().shape({
+					name: Yup.string().required('Nome obrigatório'),
+					email: Yup.string()
+						.required('Email obrigatório')
+						.email('Email inválido'),
+					oldPassword: Yup.string(),
+					password: Yup.string().when('oldPassword', {
+						is: (val) => !!val.length,
+						then: Yup.string().min(6, 'No mínimo 6 dígitos'),
+						otherwise: Yup.string(),
+					}),
+					passwordConfirmation: Yup.string().when('oldPassword', {
+						is: (val) => !!val.length,
+						then: Yup.string()
+							.required('Confirme a nova senha')
+							.oneOf(
+								[Yup.ref('password')],
+								'As senhas não conferem',
+							),
+						otherwise: Yup.string(),
+					}),
+				});
+
+				await schema.validate(data, {
+					abortEarly: false,
+				});
+
+				const profileFormData = {
+					name: data.name,
+					email: data.email,
+					...(!!data.oldPassword.length && {
+						oldPassword: data.oldPassword,
+						password: data.password,
+						passwordConfirmation: data.passwordConfirmation,
+					}),
+				} as ProfileFormData;
+
+				api.put<User>('/profile', profileFormData)
+					.then((response) => {
+						updateUser(response.data);
+
+						history.push('/dashboard');
+
+						addToast({
+							type: 'success',
+							title: 'Perfil atualizado com sucesso!',
+						});
+					})
+					.catch((err: FriendlyError) => {
+						err.signOut && signOut();
+						addToast(err.toastMessage);
+					});
+			} catch (err) {
+				if (err instanceof Yup.ValidationError) {
+					const errors = getValidationErros(err);
+					formRef.current?.setErrors(errors);
+
+					addToast({
+						type: 'error',
+						title: 'Erro ao cadastrar',
+						description:
+							'Você não preencheu corretamente os campos do formulário. ' +
+							'Por favor, verifique os dados e tente novamente.',
+					});
+				}
+			} finally {
+				setLoading(false);
+			}
+		},
+		[addToast, signOut, updateUser],
+	);
 
 	const handleAvatarChange = useCallback(
 		(e: ChangeEvent<HTMLInputElement>) => {
@@ -52,9 +133,7 @@ const Profile: React.FC = () => {
 						addToast({
 							type: 'success',
 							title: 'Avatar atualizado!',
-							description:
-								'Adorei a foto, muito chique! Você deve fazer login novamente para que a' +
-								' foto seja aplicada.',
+							description: 'Adorei a foto, muito chique!',
 							duration: 6000,
 						});
 					})

@@ -117,7 +117,7 @@ export const AnimatedContainer = styled.div`
 		text-align: center;
 		display: flex;
 		flex-direction: column;
-		align-items: center;
+		align-items: stretch;
 
 		h2 {
 			text-align: left;
